@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS items
 CREATE TABLE IF NOT EXISTS food_recipes
 (
     id        SERIAL PRIMARY KEY,
-    name      TEXT    NOT NULL,
-    group_id  INTEGER NOT NULL, -- e.g. day 1, 2, etc.
-    meal_type TEXT    NOT NULL, -- e.g. breakfast, brunch, lunch, dinner,
-    notes     TEXT    NOT NULL  -- preparation notes etc
+    name      TEXT NOT NULL,
+    group_id  INTEGER,       -- e.g. day 1, 2, etc.
+    meal_type TEXT NOT NULL, -- e.g. breakfast, brunch, lunch, dinner,
+    notes     TEXT           -- preparation notes etc
 );
 
 CREATE TABLE IF NOT EXISTS food_diary
