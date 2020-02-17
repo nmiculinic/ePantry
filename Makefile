@@ -17,3 +17,14 @@ load-dev-database:
 
 dump-dev-database:
 	pg_dump --dbname=postgres --schema=public --inserts --clean --if-exists --file=db/dev-db.sql --username=postgres --host=localhost --port=5432
+
+.PHONY: deps clean build
+
+deps:
+	go get -u ./...
+
+clean:
+	rm -rf ./ePantry/ePantry
+
+build:
+	GOOS=linux GOARCH=amd64 go build -o ePantry/ePantry ./ePantry
