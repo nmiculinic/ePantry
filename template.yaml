@@ -10,6 +10,12 @@ Globals:
   Function:
     Timeout: 5
 
+Parameters:
+  DBPassword:
+    Type: String
+    Description: Database password
+
+
 Resources:
   ePantryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -36,8 +42,8 @@ Resources:
       DBName: postgres
       AllocatedStorage: "20"
       Engine: "postgres"
-      MasterUsername: "MyName"
-      MasterUserPassword: "MyPassword"
+      MasterUsername: "postgres"
+      MasterUserPassword: !Ref DBPassword
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
