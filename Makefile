@@ -1,4 +1,11 @@
-DATABASE_URL?='postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable'
+PGHOST?=localhost
+PGPORT?=5432
+PGUSER?=postgres
+PGPASSWORD?=postgres
+PGDATABASE?=postgres
+PGSSLMODE?=disable
+DATABASE_URL ?= "postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=${PGSSLMODE}"
+DUMPFILE ?= "db/dev-db.sql"
 
 run-db:
 	docker run -d --name ePantryPostgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
@@ -12,8 +19,22 @@ stop-db:
 apply_migrations:
 	migrate -database ${DATABASE_URL} -path db/migrations up
 
-load-dev-database:
-	psql -d postgres -h localhost -U postgres -f db/dev-db.sql
+load-database:
+	psql -f ${DUMPFILE}
 
-dump-dev-database:
-	pg_dump --dbname=postgres --schema=public --inserts --clean --if-exists --file=db/dev-db.sql --username=postgres --host=localhost --port=5432
+dump-database:
+	pg_dump --schema=public --inserts --clean --if-exists --file=${DUMPFILE}
+
+.PHONY: deps clean build
+
+deps:
+	go get -u ./...
+
+clean:
+	rm -rf ./ePantry/ePantry
+
+build:
+	GOOS=linux GOARCH=amd64 go build -o ePantry/ePantry ./ePantry
+
+deploy: build
+	sam deploy
