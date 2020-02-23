@@ -29,11 +29,11 @@ ORDER BY food_diary.time
 
 -- meal prep meals
 
-SELECT food_recipes.name, food_recipes.meal_type, amounts.amount
+SELECT food_recipes.id, food_recipes.name, food_recipes.meal_type, amounts.amount
 FROM (
          SELECT food_diary.recipe_id, COUNT(*) as "amount"
          FROM food_diary
-         WHERE food_diary.time > ?
+         WHERE food_diary.time > '2020-02-21 14:00'
          GROUP BY food_diary.recipe_id
      ) AS amounts,
      food_recipes

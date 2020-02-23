@@ -35,6 +35,15 @@ clean:
 
 build:
 	GOOS=linux GOARCH=amd64 go build -o ePantry/ePantry ./ePantry
+	mkdir -p bin
+	go build -o bin/local ./cmd/ePantry
 
 deploy: build
 	sam deploy
+
+run-local: build
+	./bin/local
+
+xo-gen:
+	@mkdir -p pkg/models
+	@xo ${DATABASE_URL} -o pkg/models

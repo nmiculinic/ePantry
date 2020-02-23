@@ -3,7 +3,7 @@
 # Dev
 
 This project requires the following software for successful development:
-* https://github.com/golang-migrate/migrate 
+* https://github.com/golang-migrate/migrate
 
 This is a sample template for ePantry - Below is a brief explanation of what we have generated for you:
 

@@ -394,4 +394,3 @@ ALTER TABLE ONLY public.food_recipe_item
 --
 -- PostgreSQL database dump complete
 --
-
