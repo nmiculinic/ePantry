@@ -19,6 +19,7 @@ type Config struct {
 	DatabaseURL string
 	StartDate   string
 	EndDate     string
+	DryRun      bool
 }
 
 func NewLocalServerCommand() *cobra.Command {
@@ -33,10 +34,12 @@ func NewLocalServerCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("start-date", "", "database url. Can be loaded via env DATABASE_URL")
-	cmd.Flags().String("end-date", "", "database url. Can be loaded via env DATABASE_URL")
+	cmd.Flags().Bool("dry-run", false, "dry run")
+	cmd.Flags().String("start-date", "", "start date for food diary entry generation")
+	cmd.Flags().String("end-date", "", "end date for food diary entry generation")
 	cmd.Flags().String("database-url", "", "database url. Can be loaded via env DATABASE_URL")
 	must(viper.BindPFlag("databaseURL", cmd.Flag("database-url")))
+	must(viper.BindPFlag("dryRun", cmd.Flag("dry-run")))
 	must(viper.BindPFlag("startDate", cmd.Flag("start-date")))
 	must(viper.BindPFlag("endDate", cmd.Flag("end-date")))
 	must(viper.BindEnv("databaseURL", "DATABASE_URL"))
@@ -81,6 +84,7 @@ FROM food_diary
 	}
 
 	items := make([]*models.FoodDiary, 0)
+	offset := 7
 	for day := startDate; day.Before(endDate); day = day.Add(24 * time.Hour) {
 		day = toDayOnly(day)
 		if _, present := diary[day]; present {
@@ -88,7 +92,7 @@ FROM food_diary
 			continue
 		}
 
-		dayId := 1 + ((day.YearDay() % 10) / 2)
+		dayId := 1 + (((day.YearDay() + offset) % 10) / 2)
 		for i, timeOfDay := range []time.Duration{
 			7 * time.Hour,
 			10 * time.Hour,
@@ -111,12 +115,17 @@ FROM food_diary
 		logrus.Infof("preparing to insert day %d for %v", dayId, day)
 	}
 
-	for _, it := range items {
-		if err := it.Save(db); err != nil {
-			return fmt.Errorf("saving db %w", err)
+	if !cfg.DryRun {
+		for _, it := range items {
+			if err := it.Save(db); err != nil {
+				return fmt.Errorf("saving db %w", err)
+			}
 		}
+		logrus.Info("saved all items to the database")
+	} else {
+		logrus.Warn("dry-run mode, skipping inserting items in db")
 	}
-	logrus.Info("saved all items to the database")
+
 	return nil
 }
 
