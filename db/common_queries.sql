@@ -5,11 +5,12 @@ SELECT food_diary.time,
        food_recipes.name,
        food_recipes.meal_type,
        food_diary.notes
-FROM food_diary,
+FROM food_diary
+         LEFT JOIN
      food_recipes
-WHERE food_diary.recipe_id = food_recipes.id
-  AND food_diary.time > '2020-03-06 9:00'
-  AND food_diary.time < '2020-03-09'
+     ON food_diary.recipe_id = food_recipes.id
+WHERE food_diary.time > '2020-03-09'
+  AND food_diary.time < '2020-03-14'
 ORDER BY food_diary.time
 
 -- display food diary with details

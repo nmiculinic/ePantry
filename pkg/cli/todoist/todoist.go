@@ -21,6 +21,7 @@ type Config struct {
 	DryRun       bool
 	TodoistToken string
 	ProjectName  string
+	Clean        bool
 }
 
 func NewCommand() *cobra.Command {
@@ -44,6 +45,22 @@ func NewCommand() *cobra.Command {
 			projectID, err := getProjectId(client, cfg)
 			if err != nil {
 				return err
+			}
+
+			if cfg.Clean && !cfg.DryRun {
+				ids := make([]int, 0)
+				for _, it := range client.Store.Items {
+					if it.ProjectID == projectID {
+						ids = append(ids, it.ID)
+					}
+				}
+				if err := client.DeleteItem(ctx, ids); err != nil {
+					return err
+				}
+				if err := client.Sync(ctx); err != nil {
+					return err
+				}
+				logrus.Infof("Deleted %d existing items", len(ids))
 			}
 
 			existingItems := make(map[string]int)
@@ -129,10 +146,15 @@ ORDER BY items.name
 					logrus.Infof("%s queued for insertion", name)
 				}
 			}
-			if err := client.ExecCommands(ctx, commands); err != nil {
-				return err
+			if !cfg.DryRun {
+				if err := client.ExecCommands(ctx, commands); err != nil {
+					return err
+				}
+				logrus.Infof("successfully applied %d commands", len(commands))
+			} else {
+				logrus.Infof("dry run; would apply the following commands: %v", commands)
 			}
-			logrus.Infof("successfully applied %d commands", len(commands))
+
 			return nil
 		},
 	}
@@ -143,11 +165,13 @@ ORDER BY items.name
 	cmd.Flags().String("database-url", "", "database url. Can be loaded via env DATABASE_URL")
 	cmd.Flags().String("todoist-token", "", "todoist tokken Can be loaded via env TODOIST_TOKEN")
 	cmd.Flags().String("project-name", "Groceries", "project name in todoist where to put food items")
+	cmd.Flags().Bool("clean", false, "should you clean all previous project items before applying")
 	must(viper.BindPFlag("databaseURL", cmd.Flag("database-url")))
 	must(viper.BindPFlag("dryRun", cmd.Flag("dry-run")))
 	must(viper.BindPFlag("startDate", cmd.Flag("start-date")))
 	must(viper.BindPFlag("endDate", cmd.Flag("end-date")))
 	must(viper.BindPFlag("projectName", cmd.Flag("project-name")))
+	must(viper.BindPFlag("clean", cmd.Flag("clean")))
 	must(viper.BindEnv("databaseURL", "DATABASE_URL"))
 	must(viper.BindEnv("todoistToken", "TODOIST_TOKEN"))
 	return cmd
