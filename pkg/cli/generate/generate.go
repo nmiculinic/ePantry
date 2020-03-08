@@ -1,4 +1,4 @@
-package local
+package generate
 
 import (
 	"database/sql"
@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,9 +21,9 @@ type Config struct {
 	DryRun      bool
 }
 
-func NewLocalServerCommand() *cobra.Command {
+func NewGenerateCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "ePantry",
+		Use: "generate",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg := &Config{}
 			if err := viper.Unmarshal(cfg); err != nil {
@@ -35,8 +34,8 @@ func NewLocalServerCommand() *cobra.Command {
 	}
 
 	cmd.Flags().Bool("dry-run", false, "dry run")
-	cmd.Flags().String("start-date", "", "start date for food diary entry generation")
-	cmd.Flags().String("end-date", "", "end date for food diary entry generation")
+	cmd.Flags().String("start-date", time.Now().Format("2006-01-02"), "start date for food diary entry generation")
+	cmd.Flags().String("end-date", time.Now().Add(14*24*time.Hour).Format("2006-01-02"), "end date for food diary entry generation")
 	cmd.Flags().String("database-url", "", "database url. Can be loaded via env DATABASE_URL")
 	must(viper.BindPFlag("databaseURL", cmd.Flag("database-url")))
 	must(viper.BindPFlag("dryRun", cmd.Flag("dry-run")))

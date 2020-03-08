@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/nmiculinic/ePantry/pkg/local"
+	"github.com/nmiculinic/ePantry/pkg/cli"
 )
 
 func main() {
-	if err := local.NewLocalServerCommand().Execute(); err != nil {
+	if err := cli.NewLocalServerCommand().Execute(); err != nil {
 		log.Panic(err)
 	}
 }
