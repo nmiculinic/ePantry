@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   ePantry
 
-  Sample SAM Template for ePantry
+  a simple pantry & food manager. Mostly a learning experience.
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -20,7 +20,7 @@ Resources:
   ePantryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ePantry/
+      CodeUri: bin/ePantry-lambda
       Handler: hello-world
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html

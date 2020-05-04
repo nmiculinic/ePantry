@@ -25,22 +25,27 @@ load-database:
 dump-database:
 	pg_dump --schema=public --inserts --clean --if-exists --file=${DUMPFILE}
 
-.PHONY: deps clean build
-
-deps:
-	go get -u ./...
+.PHONY: deps build
 
 clean:
-	rm -rf ./ePantry/ePantry
+	rm -Rf ./ePantry/ePantry
+	rm -Rf ./bin
+.PHONY: clean
 
 build:
-	GOOS=linux GOARCH=amd64 go build -o ePantry/ePantry ./ePantry
 	mkdir -p bin
-	go build -o bin/ePantry ./cmd/ePantry
+	GOOS=linux GOARCH=amd64 go build -o bin/ePantry-lambda ./cmd/lambda
+#	go build -o bin/ePantry ./cmd/ePantry
+.PHONY: build
 
 deploy: build
 	sam deploy
+.PHONY: deploy
 
 xo-gen:
 	@mkdir -p pkg/models
 	@xo ${DATABASE_URL} -o pkg/models
+
+creds:
+	echo "run\n source <(lpass show ePantry --notes)"
+.PHONY: creds
