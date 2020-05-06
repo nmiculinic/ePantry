@@ -34,8 +34,8 @@ clean:
 
 build:
 	mkdir -p bin
-	GOOS=linux GOARCH=amd64 go build -o bin/ePantry-lambda ./cmd/lambda
-#	go build -o bin/ePantry ./cmd/ePantry
+	GOOS=linux GOARCH=amd64 go build -o ./bin/api-lambda ./cmd/lambda
+	go build -o bin/ePantry ./cmd/ePantry
 .PHONY: build
 
 deploy: build
