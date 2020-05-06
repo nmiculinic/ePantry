@@ -36,6 +36,7 @@ build:
 	mkdir -p bin
 	GOOS=linux GOARCH=amd64 go build -o ./bin/api-lambda ./cmd/lambda
 	go build -o bin/ePantry ./cmd/ePantry
+	go build -o bin/apiserver ./cmd/local-apiserver
 .PHONY: build
 
 deploy: build
@@ -45,6 +46,14 @@ deploy: build
 xo-gen:
 	@mkdir -p pkg/models
 	@xo ${DATABASE_URL} -o pkg/models
+
+proto-gen:
+	protoc \
+    --go_out=plugins=grpc:$(PWD)/pkg/api/v1 \
+    --grpc-gateway_out=logtostderr=true:$(PWD)/pkg/api/v1 \
+    -I/usr/include \
+    -I=$(PWD)/pkg/api/v1  \
+    $(PWD)/pkg/api/v1/epantry.proto
 
 creds:
 	echo "run\n source <(lpass show ePantry --notes)"

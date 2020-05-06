@@ -1,0 +1,14 @@
+syntax = "proto3";
+package api.v1.epantry;
+option go_package = "v1";
+
+import "google/protobuf/empty.proto";
+
+message APIVersion {
+    string version = 1;
+}
+
+
+service ePantry {
+    rpc Version(google.protobuf.Empty) returns (APIVersion);
+}
