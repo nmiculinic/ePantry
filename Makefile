@@ -51,10 +51,20 @@ proto-gen:
 	protoc \
     --go_out=plugins=grpc:$(PWD)/pkg/api/v1 \
     --grpc-gateway_out=logtostderr=true:$(PWD)/pkg/api/v1 \
+	--dart_out=grpc:$(PWD)/webui/lib/src/generated \
     -I/usr/include \
     -I=$(PWD)/pkg/api/v1  \
     $(PWD)/pkg/api/v1/epantry.proto
 
+	protoc \
+	--dart_out=grpc:$(PWD)/webui/lib/src/generated \
+    -I/usr/include \
+    -I=$(PWD)/pkg/api/v1  \
+    $(shell find /usr/include/google/protobuf -name '*.proto')
+
 creds:
 	echo "run\n source <(lpass show ePantry --notes)"
 .PHONY: creds
+
+webdev-serve:
+	@cd webui && webdev serve

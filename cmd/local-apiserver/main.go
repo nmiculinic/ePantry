@@ -17,7 +17,10 @@ type flags struct {
 }
 
 func main() {
-	log := zap.NewExample()
+	log, err := zap.NewDevelopment()
+	if err != nil {
+		panic(err)
+	}
 	defer log.Sync()
 	flags := &flags{}
 	cmd := &cobra.Command{
@@ -28,7 +31,7 @@ func main() {
 			return runE(flags, log)
 		},
 	}
-	cmd.Flags().StringVar(&flags.addr, "address", "0.0.0.0:8080", "Address to bind this API server on.")
+	cmd.Flags().StringVar(&flags.addr, "address", "0.0.0.0:8090", "Address to bind this API server on.")
 	cmd.Flags().StringVar(&flags.TLSCertFile, "tls-cert-file", "", "File containing the default x509 Certificate for HTTPS. If not provided no TLS security shall be enabled")
 	cmd.Flags().StringVar(&flags.TLSPrivateKeyFile, "tls-private-key-file", "", "File containing the default x509 private key matching --tls-cert-file.")
 	if err := cmd.Execute(); err != nil {
